@@ -1,0 +1,24 @@
+---
+# tasks file for nutanix_role_nutanix_container
+- name: Setup connection to Nutanix API
+  ansible.builtin.include_tasks: setup_api.yml
+
+- name: "Task can only be run against Prism Element"
+  ansible.builtin.fail:
+    msg: "'nutanix_host' needs to be set to the VIP of a Nutanix cluster. Please check the variable and try again."
+  when:
+    - nutanix_endpoint_prism_type != 'pe'
+
+- name: Inputs for remove default container task
+  ansible.builtin.include_tasks: remove_default_container.yml
+  when: nutanix_containers_remove_default
+
+- name: Include default variables
+  ansible.builtin.include_vars:
+    file: vars/defaults.yml
+
+- name: Inputs for create/update container task
+  ansible.builtin.include_tasks: crud_container.yml
+  loop: "{{ nutanix_containers_list }}"
+  loop_control:
+    loop_var: outer_item

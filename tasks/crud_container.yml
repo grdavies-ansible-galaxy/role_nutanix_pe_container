@@ -1,0 +1,124 @@
+---
+- name: Inputs for get containers task
+  ansible.builtin.include_tasks: get_containers.yml
+
+- name: Unset fact "nutanix_container_uuid"
+  ansible.builtin.set_fact:
+    nutanix_container_uuid: "None"
+
+- name: Check whether container exists
+  ansible.builtin.set_fact:
+    nutanix_container_uuid: "{{ item }}"
+  with_items: "{{ nutanix_current_containers.json | to_json | from_json | json_query(query) }}"
+  vars:
+    query: "entities[?name=='{{ outer_item.name }}'].storage_container_uuid"
+  when: nutanix_current_containers.json.metadata.total_entities > 0
+
+# - name: Debug nutanix_container_uuid for "{{ outer_item.name }}"
+#   debug:
+#     var: nutanix_container_uuid
+#   when:
+#     - nutanix_debug
+#     - nutanix_container_uuid
+#
+# - name: Debug api call body for "{{ outer_item.name }}"
+#   debug:
+#     msg: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+#   when: nutanix_debug
+
+- name: Create container "{{ outer_item.name }}"
+  when:
+    - nutanix_container_uuid == "None"
+    - outer_item.state == "present"
+  block:
+    - name: Create container on "{{ nutanix_host }}"
+      ansible.builtin.uri:
+        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers"
+        method: POST
+        validate_certs: "{{ validate_certs }}"
+        body: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+        body_format: json
+        headers:
+          Authorization: "{{ nutanix_api_auth }}"
+        status_code: 201
+        return_content: true
+      register: nutanix_create_container
+      ignore_errors: false
+
+    - name: Debug create container result for "{{ outer_item.name }}"
+      ansible.builtin.debug:
+        var: nutanix_create_container
+      when:
+        - nutanix_debug
+        - nutanix_create_container is defined
+
+    - name: Failed to create container
+      ansible.builtin.fail:
+        msg: "could not create container '{{ outer_item.name }}'"
+      when:
+        - nutanix_create_container is defined
+        - not nutanix_create_container.json.value
+
+- name: Update container "{{ outer_item.name }}"
+  when:
+    - nutanix_container_uuid != "None"
+    - outer_item.state == "present"
+  block:
+    - name: Update container on "{{ nutanix_host }}"
+      ansible.builtin.uri:
+        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers"
+        method: PATCH
+        validate_certs: "{{ validate_certs }}"
+        body: "{{ lookup('template', 'update_container.json.j2') | to_nice_json }}"
+        body_format: json
+        headers:
+          Authorization: "{{ nutanix_api_auth }}"
+        status_code: 200
+        return_content: true
+      register: nutanix_update_container
+      ignore_errors: false
+
+    - name: Debug update container result for "{{ outer_item.name }}"
+      ansible.builtin.debug:
+        var: nutanix_update_container
+      when:
+        - nutanix_debug
+        - nutanix_update_container is defined
+
+    - name: Failed to update container
+      ansible.builtin.fail:
+        msg: "could not update container '{{ outer_item.name }}'"
+      when:
+        - nutanix_update_container is defined
+        - not nutanix_update_container.json.value
+
+- name: Delete container "{{ outer_item.name }}"
+  when:
+    - nutanix_container_uuid != "None"
+    - outer_item.state == "absent"
+  block:
+    - name: Delete container on "{{ nutanix_host }}"
+      ansible.builtin.uri:
+        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers/{{ nutanix_container_uuid }}"
+        method: DELETE
+        validate_certs: "{{ validate_certs }}"
+        headers:
+          Authorization: "{{ nutanix_api_auth }}"
+        status_code: 204
+        return_content: true
+      register: nutanix_delete_container
+      ignore_errors: false
+
+    - name: Debug delete container result for "{{ outer_item.name }}"
+      ansible.builtin.debug:
+        var: nutanix_delete_container
+      when:
+        - nutanix_debug
+        - nutanix_delete_container is defined
+
+    - name: Failed to delete container
+      ansible.builtin.fail:
+        msg: "could not delete container '{{ outer_item.name }}'"
+      when:
+        - nutanix_delete_container is defined
+        - nutanix_delete_container.failed

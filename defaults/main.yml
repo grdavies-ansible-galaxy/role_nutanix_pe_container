@@ -1,0 +1,21 @@
+---
+# defaults file for nutanix_role_nutanix_container
+nutanix_host: ""
+nutanix_username: ""
+nutanix_password: ""
+nutanix_port: 9440
+validate_certs: false
+nutanix_debug: false
+nutanix_containers_remove_default: true
+nutanix_containers_list:
+  []
+  # - name: Default
+  #   rf: 2
+  #   compression: True
+  #   compression_delay_in_secs: 0
+  #   dedupe_cache: True
+  #   dedupe_capacity: True
+  #   erasure_coding: True
+  #   max_capacity_in_gb: 0
+  #   advertised_capacity_in_gb: 0
+  #   reserved_capacity_in_gb: 0

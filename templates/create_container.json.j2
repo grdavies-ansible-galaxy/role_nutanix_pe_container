@@ -1,0 +1,39 @@
+{
+{% if outer_item.advertised_capacity|default("") != "" %}
+  "advertised_capacity": {{ outer_item.advertised_capacity }},
+{% endif %}
+
+{% if outer_item.dedupe_cache|default(nutanix_default_dedupe_cache) == true  %}
+  "finger_print_on_write": "ON",
+  {% if outer_item.dedupe_capacity|default(nutanix_default_dedupe_capacity) == true  %}"on_disk_dedup": "POST_PROCESS",{% endif %}
+{% else %}
+  "on_disk_dedup": "NONE",
+{% endif %}
+
+{% if outer_item.compression|default(nutanix_default_compression) == true  %}
+  "compression_enabled": "true",
+  "compression_delay_in_secs": {{ outer_item.compression_delay_in_secs|default(nutanix_default_compression_delay) * 60}},
+{% else %}
+  "compression_enabled": "false",
+{% endif %}
+
+{% if outer_item.encryption|default(nutanix_default_encryption) == true  %}
+  "enable_software_encryption": "true",{% else %}"enable_software_encryption": "false",
+{% endif %}
+
+{% if outer_item.erasure_coding|default(nutanix_default_erasure_coding) == true  %}
+  "erasure_code": "on",{% else %}"erasure_code": "off",
+{% endif %}
+
+{% if outer_item.max_capacity|default("") != "" %}
+  "max_capacity": outer_item.max_capacity,
+{% endif %}
+
+{% if outer_item.reserved_capacity|default("") != "" %}
+  "total_explicit_reserved_capacity": {{ outer_item.reserved_capacity }},
+  "total_implicit_reserved_capacity": {{ outer_item.reserved_capacity }},
+{% endif %}
+
+  "name": "{{ outer_item.name }}",
+  "replication_factor": {{ outer_item.rf|default(nutanix_default_rf) }}
+}
