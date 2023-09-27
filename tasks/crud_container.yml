@@ -1,124 +1,136 @@
 ---
-- name: Inputs for get containers task
-  ansible.builtin.include_tasks: get_containers.yml
+- name: Gather current containers
+  uri:
+    url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers"
+    method: GET
+    validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
+    body_format: json
+    headers:
+      Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"
+    status_code: 200
+    return_content: true
+  register: role_nutanix_pe_container_current_list
+  ignore_errors: false
 
-- name: Unset fact "nutanix_container_uuid"
+- name: Debug get_containers.yml variables
+  debug:
+    var: role_nutanix_pe_container_current_list.json
+  when:
+    - role_nutanix_pe_container_debug
+
+- name: Unset fact "role_nutanix_pe_container_uuid"
   ansible.builtin.set_fact:
-    nutanix_container_uuid: "None"
+    role_nutanix_pe_container_uuid: "None"
 
 - name: Check whether container exists
   ansible.builtin.set_fact:
-    nutanix_container_uuid: "{{ item }}"
-  with_items: "{{ nutanix_current_containers.json | to_json | from_json | json_query(query) }}"
+    role_nutanix_pe_container_uuid: "{{ item }}"
+  with_items: "{{ role_nutanix_pe_container_current_list.json | to_json | from_json | json_query(query) }}"
   vars:
     query: "entities[?name=='{{ outer_item.name }}'].storage_container_uuid"
-  when: nutanix_current_containers.json.metadata.total_entities > 0
+  when: role_nutanix_pe_container_current_list.json.metadata.total_entities > 0
 
-# - name: Debug nutanix_container_uuid for "{{ outer_item.name }}"
-#   debug:
-#     var: nutanix_container_uuid
-#   when:
-#     - nutanix_debug
-#     - nutanix_container_uuid
-#
-# - name: Debug api call body for "{{ outer_item.name }}"
-#   debug:
-#     msg: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
-#   when: nutanix_debug
+- name: Debug role_nutanix_pe_container_uuid for "{{ outer_item.name }}"
+  debug:
+    var: role_nutanix_pe_container_uuid
+  when:
+    - role_nutanix_pe_container_debug
+
+- name: Debug api call body for "{{ outer_item.name }}"
+  debug:
+    msg: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
+  when: role_nutanix_pe_container_debug
 
 - name: Create container "{{ outer_item.name }}"
   when:
-    - nutanix_container_uuid == "None"
+    - role_nutanix_pe_container_uuid == "None"
     - outer_item.state == "present"
   block:
-    - name: Create container on "{{ nutanix_host }}"
+    - name: Create container on "{{ role_nutanix_pe_container_host }}"
       ansible.builtin.uri:
-        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers"
+        url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers"
         method: POST
-        validate_certs: "{{ validate_certs }}"
+        validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
         body: "{{ lookup('template', 'create_container.json.j2') | to_nice_json }}"
         body_format: json
         headers:
-          Authorization: "{{ nutanix_api_auth }}"
+          Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"
         status_code: 201
         return_content: true
-      register: nutanix_create_container
+      register: role_nutanix_pe_container_create_task
       ignore_errors: false
 
     - name: Debug create container result for "{{ outer_item.name }}"
       ansible.builtin.debug:
-        var: nutanix_create_container
+        var: role_nutanix_pe_container_create_task
       when:
-        - nutanix_debug
-        - nutanix_create_container is defined
+        - role_nutanix_pe_container_debug
 
     - name: Failed to create container
       ansible.builtin.fail:
         msg: "could not create container '{{ outer_item.name }}'"
       when:
-        - nutanix_create_container is defined
-        - not nutanix_create_container.json.value
+        - role_nutanix_pe_container_create_task is defined
+        - not role_nutanix_pe_container_create_task.json.value
 
 - name: Update container "{{ outer_item.name }}"
   when:
-    - nutanix_container_uuid != "None"
+    - role_nutanix_pe_container_uuid != "None"
     - outer_item.state == "present"
   block:
-    - name: Update container on "{{ nutanix_host }}"
+    - name: Update container on "{{ role_nutanix_pe_container_host }}"
       ansible.builtin.uri:
-        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers"
+        url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers"
         method: PATCH
-        validate_certs: "{{ validate_certs }}"
+        validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
         body: "{{ lookup('template', 'update_container.json.j2') | to_nice_json }}"
         body_format: json
         headers:
-          Authorization: "{{ nutanix_api_auth }}"
+          Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"
         status_code: 200
         return_content: true
-      register: nutanix_update_container
+      register: role_nutanix_pe_container_update_task
       ignore_errors: false
 
     - name: Debug update container result for "{{ outer_item.name }}"
       ansible.builtin.debug:
-        var: nutanix_update_container
+        var: role_nutanix_pe_container_update_task
       when:
-        - nutanix_debug
-        - nutanix_update_container is defined
+        - role_nutanix_pe_container_debug
 
     - name: Failed to update container
       ansible.builtin.fail:
         msg: "could not update container '{{ outer_item.name }}'"
       when:
-        - nutanix_update_container is defined
-        - not nutanix_update_container.json.value
+        - role_nutanix_pe_container_update_task is defined
+        - not role_nutanix_pe_container_update_task.json.value
 
 - name: Delete container "{{ outer_item.name }}"
   when:
-    - nutanix_container_uuid != "None"
+    - role_nutanix_pe_container_uuid != "None"
     - outer_item.state == "absent"
   block:
-    - name: Delete container on "{{ nutanix_host }}"
+    - name: Delete container on "{{ role_nutanix_pe_container_host }}"
       ansible.builtin.uri:
-        url: "https://{{ nutanix_host }}:{{ nutanix_port }}/PrismGateway/services/rest/v2.0/storage_containers/{{ nutanix_container_uuid }}"
+        url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers/{{ role_nutanix_pe_container_uuid }}"
         method: DELETE
-        validate_certs: "{{ validate_certs }}"
+        validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
         headers:
-          Authorization: "{{ nutanix_api_auth }}"
+          Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"
         status_code: 204
         return_content: true
-      register: nutanix_delete_container
+      register: role_nutanix_pe_container_delete_task
       ignore_errors: false
 
     - name: Debug delete container result for "{{ outer_item.name }}"
       ansible.builtin.debug:
-        var: nutanix_delete_container
+        var: role_nutanix_pe_container_delete_task
       when:
-        - nutanix_debug
-        - nutanix_delete_container is defined
+        - role_nutanix_pe_container_debug
 
     - name: Failed to delete container
       ansible.builtin.fail:
         msg: "could not delete container '{{ outer_item.name }}'"
       when:
-        - nutanix_delete_container is defined
-        - nutanix_delete_container.failed
+        - role_nutanix_pe_container_delete_task is defined
+        - role_nutanix_pe_container_delete_task.failed

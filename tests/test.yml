@@ -4,53 +4,53 @@
   roles:
     - role: ../..
   vars:
-    nutanix_host: 10.38.185.37
-    nutanix_username: admin
-    nutanix_password: nx2Tech165!
-    nutanix_debug: True
-    nutanix_containers_remove_default: True
-    nutanix_containers_list:
+    role_nutanix_pe_container_host: 10.38.67.37
+    role_nutanix_pe_container_username: admin
+    role_nutanix_pe_container_password: nx2Tech454!
+    role_nutanix_pe_container_debug: true
+    nutanix_containers_remove_default: true
+    role_nutanix_pe_container_list:
       - name: inline_compression
         state: present
         rf: 2
-        compression: True
+        compression: true
         compression_delay_in_secs: 0
-        dedupe_cache: False
-        dedupe_capacity: False
-        erasure_coding: False
+        dedupe_cache: false
+        dedupe_capacity: false
+        erasure_coding: false
         # max_capacity_in_gb: 0
         # advertised_capacity_in_gb: 0
         # reserved_capacity_in_gb: 0
       - name: post_process_compression
         state: present
         rf: 2
-        compression: True
+        compression: true
         compression_delay_in_secs: 60
-        dedupe_cache: False
-        dedupe_capacity: False
-        erasure_coding: False
+        dedupe_cache: false
+        dedupe_capacity: false
+        erasure_coding: false
         # max_capacity_in_gb: 0
         # advertised_capacity_in_gb: 0
         # reserved_capacity_in_gb: 0
       - name: deduplication
         state: present
         rf: 2
-        compression: False
+        compression: false
         # compression_delay_in_secs: 0
-        dedupe_cache: True
-        dedupe_capacity: True
-        erasure_coding: False
+        dedupe_cache: true
+        dedupe_capacity: true
+        erasure_coding: false
         # max_capacity_in_gb: 0
         # advertised_capacity_in_gb: 0
         # reserved_capacity_in_gb: 0
       - name: inline_compression_deduplication
         state: present
         rf: 2
-        compression: True
+        compression: true
         compression_delay_in_secs: 0
-        dedupe_cache: True
-        dedupe_capacity: True
-        erasure_coding: False
+        dedupe_cache: true
+        dedupe_capacity: true
+        erasure_coding: false
         # max_capacity_in_gb: 0
         # advertised_capacity_in_gb: 0
         # reserved_capacity_in_gb: 0

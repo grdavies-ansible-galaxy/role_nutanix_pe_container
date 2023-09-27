@@ -1,13 +1,13 @@
 ---
 # defaults file for nutanix_role_nutanix_container
-nutanix_host: ""
-nutanix_username: ""
-nutanix_password: ""
-nutanix_port: 9440
-validate_certs: false
-nutanix_debug: false
+role_nutanix_pe_container_host: ""
+role_nutanix_pe_container_username: ""
+role_nutanix_pe_container_password: ""
+role_nutanix_pe_container_port: 9440
+role_nutanix_pe_container_validate_certs: false
+role_nutanix_pe_container_debug: false
 nutanix_containers_remove_default: true
-nutanix_containers_list:
+role_nutanix_pe_container_list:
   []
   # - name: Default
   #   rf: 2
@@ -19,3 +19,10 @@ nutanix_containers_list:
   #   max_capacity_in_gb: 0
   #   advertised_capacity_in_gb: 0
   #   reserved_capacity_in_gb: 0
+nutanix_default_rf: 2
+nutanix_default_compression: true
+nutanix_default_compression_delay: 0
+nutanix_default_encryption: false
+nutanix_default_dedupe_cache: false
+nutanix_default_dedupe_capacity: false
+nutanix_default_erasure_coding: false

@@ -36,5 +36,5 @@
 
   "name": "{{ outer_item.name }}",
   "replication_factor": {{ outer_item.rf|default(nutanix_default_rf) }},
-  "storage_container_uuid": "{{ nutanix_container_uuid }}"
+  "storage_container_uuid": "{{ role_nutanix_pe_container_uuid }}"
 }
