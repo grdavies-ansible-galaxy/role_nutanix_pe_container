@@ -3,7 +3,7 @@
   uri:
     url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers"
     method: GET
-    validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
+    validate_certs: "{{ role_nutanix_pe_container_host_validate_certs }}"
     body_format: json
     headers:
       Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"
@@ -30,7 +30,7 @@
   ansible.builtin.uri:
     url: "https://{{ role_nutanix_prism_api_url_base }}/PrismGateway/services/rest/v2.0/storage_containers/{{ role_nutanix_pe_container_default_uuid }}"
     method: DELETE
-    validate_certs: "{{ role_nutanix_pe_container_validate_certs }}"
+    validate_certs: "{{ role_nutanix_pe_container_host_validate_certs }}"
     body_format: json
     headers:
       Authorization: "{{ role_nutanix_prism_api_auth_string_b64 }}"

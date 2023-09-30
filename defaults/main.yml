@@ -1,10 +1,10 @@
 ---
 # defaults file for nutanix_role_nutanix_container
 role_nutanix_pe_container_host: ""
-role_nutanix_pe_container_username: ""
-role_nutanix_pe_container_password: ""
-role_nutanix_pe_container_port: 9440
-role_nutanix_pe_container_validate_certs: false
+role_nutanix_pe_container_host_username: ""
+role_nutanix_pe_container_host_password: ""
+role_nutanix_pe_container_host_port: 9440
+role_nutanix_pe_container_host_validate_certs: false
 role_nutanix_pe_container_debug: false
 nutanix_containers_remove_default: true
 role_nutanix_pe_container_list:

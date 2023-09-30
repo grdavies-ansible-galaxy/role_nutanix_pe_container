@@ -4,16 +4,16 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
 
 ## Input Variables
 
-| Variable                                 | Required | Default | Choices                                                                         | Comments                                                                                                                                           |
-|------------------------------------------|----------|---------|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
-| role_nutanix_pe_container_host           | yes      |         |                                                                                 | The IP address or FQDN for the Prism (Element only) to which you want to connect.                                                                  |
-| role_nutanix_pe_container_username       | yes      |         |                                                                                 | A valid username with appropriate rights to access the Nutanix API.                                                                                |
-| role_nutanix_pe_container_password       | yes      |         |                                                                                 | A valid password for the supplied username.                                                                                                        |
-| role_nutanix_pe_container_port           | no       | 9440    |                                                                                 | The Prism TCP port.                                                                                                                                |
-| role_nutanix_pe_container_validate_certs | no       | false   | true or false                                                                   | Whether to check if Prism UI certificates are valid.                                                                                               |
-| role_nutanix_pe_container_debug          | no       | false   | true or false                                                                   | Enable debugging output.                                                                                                                           |
-| nutanix_containers_remove_default        | no       | true    | true or false                                                                   | If set to True the default container will be removed if it exists.                                                                                 |
-| role_nutanix_pe_container_list           | no       | []      |                                                                                 | List of containers. For container dict keys see table below.                                                                                       |
+| Variable                                      | Required | Default | Choices                                                                         | Comments                                                                                                                                           |
+|-----------------------------------------------|----------|---------|---------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|
+| role_nutanix_pe_container_host                | yes      |         |                                                                                 | The IP address or FQDN for the Prism (Element only) to which you want to connect.                                                                  |
+| role_nutanix_pe_container_host_username       | yes      |         |                                                                                 | A valid username with appropriate rights to access the Nutanix API.                                                                                |
+| role_nutanix_pe_container_host_password       | yes      |         |                                                                                 | A valid password for the supplied username.                                                                                                        |
+| role_nutanix_pe_container_host_port           | no       | 9440    |                                                                                 | The Prism TCP port.                                                                                                                                |
+| role_nutanix_pe_container_host_validate_certs | no       | false   | true or false                                                                   | Whether to check if Prism UI certificates are valid.                                                                                               |
+| role_nutanix_pe_container_debug               | no       | false   | true or false                                                                   | Enable debugging output.                                                                                                                           |
+| nutanix_containers_remove_default             | no       | true    | true or false                                                                   | If set to True the default container will be removed if it exists.                                                                                 |
+| role_nutanix_pe_container_list                | no       | []      |                                                                                 | List of containers. For container dict keys see table below.                                                                                       |
 
 ### Container dict
 
@@ -41,8 +41,8 @@ This Ansible role will create or update storage containers on a Nutanix Prism cl
     - role: grdavies.role_nutanix_pe_container
   vars:
     role_nutanix_pe_container_host: 10.38.67.37
-    role_nutanix_pe_container_username: admin
-    role_nutanix_pe_container_password: nx2Tech454!
+    role_nutanix_pe_container_host_username: admin
+    role_nutanix_pe_container_host_password: nx2Tech454!
     prism_containers_list:
       - name: example
         state: present
