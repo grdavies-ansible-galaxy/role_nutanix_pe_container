@@ -19,7 +19,7 @@
 
 - name: Inputs for remove default container task
   ansible.builtin.include_tasks: remove_default_container.yml
-  when: nutanix_containers_remove_default
+  when: role_nutanix_pe_container_remove_default
 
 - name: Inputs for create/update container task
   ansible.builtin.include_tasks: crud_container.yml

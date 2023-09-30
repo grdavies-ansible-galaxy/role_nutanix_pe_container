@@ -8,7 +8,7 @@
     role_nutanix_pe_container_host_username: admin
     role_nutanix_pe_container_host_password: nx2Tech454!
     role_nutanix_pe_container_debug: true
-    nutanix_containers_remove_default: true
+    role_nutanix_pe_container_remove_default: true
     role_nutanix_pe_container_list:
       - name: inline_compression
         state: present
